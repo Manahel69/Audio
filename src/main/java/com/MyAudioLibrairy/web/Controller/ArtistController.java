@@ -109,10 +109,10 @@ public class ArtistController {
                 Optional<Artist> artist = artistRepository.findById(idArtist);
                 if(artist.isPresent()) { //Si l'artiste est présent alors il existe
                         artistRepository.delete(artist.get());
-                        return new RedirectView("/thymeleaf/artists?page=0&size=10&sortProperty=name&sortDirection=ASC");
+                        return new RedirectView("/artists?page=0&size=10&sortProperty=name&sortDirection=ASC");
                 } else {
                         //404
-                        return new RedirectView("/thymeleaf");
+                        return new RedirectView("/artists");
                 }
         }
 
@@ -121,7 +121,7 @@ public class ArtistController {
                 Optional<Artist> artist = artistRepository.findById(idArtist);
                 if(artist.isEmpty()) {
                         //L'artiste n'existe pas donc on redirige vers la liste des artistes
-                        return new RedirectView("/thymeleaf/artists?page=0&size=10&sortProperty=name&sortDirection=ASC");
+                        return new RedirectView("/artists?page=0&size=10&sortProperty=name&sortDirection=ASC");
                 }
 
                 if(!album.getTitle().isEmpty()) {
@@ -130,21 +130,21 @@ public class ArtistController {
 
                 }
 
-                return new RedirectView("/thymeleaf/artists/"+artist.get().getId());
+                return new RedirectView("/artists/"+artist.get().getId());
         }
 
-        @RequestMapping(method = RequestMethod.GET, value = "/artists/{idArtist}/album/delete/{idAlbum}")
+        @RequestMapping(method = RequestMethod.GET, value = "/{idArtist}/album/delete/{idAlbum}")
         public RedirectView deleteAlbum(@PathVariable Long idArtist, @PathVariable Long idAlbum) {
                 Optional<Artist> artistOptional = artistRepository.findById(idArtist);
                 Optional<com.MyAudioLibrairy.web.model.Album> albumOptional = albumRepository.findById(idAlbum);
                 if(artistOptional.isEmpty()) {
-                        return new RedirectView("/thymeleaf/artists?page=0&size=10&sortProperty=name&sortDirection=ASC");
+                        return new RedirectView("/artists?page=0&size=10&sortProperty=name&sortDirection=ASC");
                 }
 
                 albumOptional.ifPresent(album -> albumRepository.delete(album));
 
 
-                return new RedirectView("/thymeleaf/artists/"+artistOptional.get().getId());
+                return new RedirectView("/artists/"+artistOptional.get().getId());
         }
 }
 
