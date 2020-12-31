@@ -18,8 +18,8 @@ import java.util.Optional;
 
 
 @Controller
-@RequestMapping("/artists")
-public class ArtistController {
+@RequestMapping(value = "/artists")
+public class ThymeleaftController {
 
 
         @Autowired
@@ -40,7 +40,7 @@ public class ArtistController {
                 return "detailArtist";
         }
 
-        @RequestMapping(method = RequestMethod.GET, value = "/artists", params = "name")
+        @RequestMapping(method = RequestMethod.GET, value = "/name", params = "name")
         public String getArtistByName(final ModelMap model, @RequestParam String name, @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size, @RequestParam(defaultValue = "name") String sortProperty, @RequestParam(defaultValue = "ASC") String sortDirection) {
                 Page<Artist> artists = artistRepository.findByNameContains(name, PageRequest.of(page, size, Sort.Direction.fromString(sortDirection), sortProperty));
                 if(!artists.isEmpty()) {
@@ -64,8 +64,8 @@ public class ArtistController {
                 return "listeArtists";
         }
 
-        @RequestMapping(method = RequestMethod.GET, value = "/artists")
-        public String getArtistPage(final ModelMap model, @RequestParam Integer page, @RequestParam Integer size, @RequestParam String sortProperty, @RequestParam String sortDirection) {
+        @RequestMapping(method = RequestMethod.GET, value = "/page")
+        public String getPageArtists(final ModelMap model, @RequestParam Integer page, @RequestParam Integer size, @RequestParam String sortProperty, @RequestParam String sortDirection) {
                 Page<Artist> artists = artistRepository.findAll(PageRequest.of(page, size, Sort.Direction.fromString(sortDirection), sortProperty));
                 if(!artists.isEmpty()) {
                         model.put("artists", artists);
@@ -89,8 +89,8 @@ public class ArtistController {
                 return "listeArtists";
         }
 
-        @RequestMapping(method = RequestMethod.GET, value = "new")
-        public String getPageCreationArtist(final ModelMap model) {
+        @RequestMapping(method = RequestMethod.GET, value = "/new")
+        public String getArtistPageCreation(final ModelMap model) {
                 model.put("artist", new Artist());
 
                 return "detailArtist";
@@ -115,12 +115,11 @@ public class ArtistController {
                         return new RedirectView("/artists");
                 }
         }
-
-        @RequestMapping(method = RequestMethod.POST, value = "/{idArtist}/album")
-        public RedirectView createAlbum(/*final ModelMap model, */@PathVariable Long idArtist, Album album) {
+        @RequestMapping(method = RequestMethod.POST, value = "albums/{idArtist}/album")
+        public RedirectView createAlbum(@PathVariable Long idArtist, Album album) {
                 Optional<Artist> artist = artistRepository.findById(idArtist);
                 if(artist.isEmpty()) {
-                        //L'artiste n'existe pas donc on redirige vers la liste des artistes
+
                         return new RedirectView("/artists?page=0&size=10&sortProperty=name&sortDirection=ASC");
                 }
 
@@ -133,19 +132,8 @@ public class ArtistController {
                 return new RedirectView("/artists/"+artist.get().getId());
         }
 
-        @RequestMapping(method = RequestMethod.GET, value = "/{idArtist}/album/delete/{idAlbum}")
-        public RedirectView deleteAlbum(@PathVariable Long idArtist, @PathVariable Long idAlbum) {
-                Optional<Artist> artistOptional = artistRepository.findById(idArtist);
-                Optional<com.MyAudioLibrairy.web.model.Album> albumOptional = albumRepository.findById(idAlbum);
-                if(artistOptional.isEmpty()) {
-                        return new RedirectView("/artists?page=0&size=10&sortProperty=name&sortDirection=ASC");
-                }
-
-                albumOptional.ifPresent(album -> albumRepository.delete(album));
 
 
-                return new RedirectView("/artists/"+artistOptional.get().getId());
-        }
 }
 
 
